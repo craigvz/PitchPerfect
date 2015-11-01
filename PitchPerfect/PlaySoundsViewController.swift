@@ -41,6 +41,7 @@ class PlaySoundsViewController: UIViewController {
     }
 
     @IBAction func didTouchSlowButton(sender: AnyObject) {
+        print("didTouchSlowButton")
         movieQuote.stop()
         movieQuote.rate = 0.5
         movieQuote.currentTime = 0.0

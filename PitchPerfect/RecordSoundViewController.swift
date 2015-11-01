@@ -31,8 +31,7 @@ class RecordSoundViewController: UIViewController, AVAudioRecorderDelegate {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-
+    
     @IBAction func recordAudio(sender: UIButton) {
         
         recordingLabel.hidden = false
@@ -43,11 +42,15 @@ class RecordSoundViewController: UIViewController, AVAudioRecorderDelegate {
         let recordingName = "my_audio.wav"
         let pathArray = [dirPath, recordingName]
         let filePath = NSURL.fileURLWithPathComponents(pathArray)
+        let recordSettings = [AVEncoderAudioQualityKey: AVAudioQuality.Min.rawValue, AVEncoderBitRateKey: 16, AVNumberOfChannelsKey: 2, AVSampleRateKey: 44100.0]
         print(filePath)
         
         let session = AVAudioSession.sharedInstance()
-        try! session.setCategory(AVAudioSessionCategoryRecord)
-        try! audioRecorder = AVAudioRecorder(URL: filePath!, settings: [:])
+        do{
+            try! session.setCategory(AVAudioSessionCategoryPlayAndRecord)
+            audioRecorder = try! AVAudioRecorder(URL: filePath!, settings: recordSettings as! [String : AnyObject])
+        }
+        
         audioRecorder.delegate = self
         audioRecorder.meteringEnabled = true
         audioRecorder.prepareToRecord()
@@ -69,7 +72,6 @@ class RecordSoundViewController: UIViewController, AVAudioRecorderDelegate {
     func audioRecorderDidFinishRecording(recorder: AVAudioRecorder, successfully flag: Bool) {
         //TODO: Save recorded audio
         if (flag) {
-            
             recordedAudio = RecordedAudio ()
             recordedAudio.filePathUrl = recorder.url
             recordedAudio.title = recorder.url.lastPathComponent
@@ -81,12 +83,9 @@ class RecordSoundViewController: UIViewController, AVAudioRecorderDelegate {
             stopButton.hidden = true
         }
        
-        
     }
     
-    
     @IBAction func stopRecordingAudio(sender: UIButton) {
-    
         recordingLabel.hidden = true
         audioRecorder.stop()
         let audioSession = AVAudioSession.sharedInstance()
